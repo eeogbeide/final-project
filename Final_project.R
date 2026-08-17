@@ -1,0 +1,8 @@
+summary(superbowl_ads)
+names(superbowl_ads)
+str(superbowl_ads)
+colnames(superbowl_ads)
+table(superbowl_ads$brand,superbowl_ads$celebrity)
+library(dplyr)
+sum(is.na(superbowl_ads))
+mean(superbowl_ads$animals)
