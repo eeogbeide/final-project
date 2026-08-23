@@ -4,7 +4,11 @@ library(gtsummary)
 install.packages("janitor")
 library(janitor)
 library(broom)
+library(ggplot2)
+install.packages("tidycat")
+library(tidycat)
 
+#generate a summary of dataset
 summary(superbowl_ads)
 names(superbowl_ads)
 str(superbowl_ads)
@@ -18,7 +22,6 @@ count(superbowl_ads, brand, danger)
 table(is.na(superbowl_ads$youtube_url))
 tabyl(superbowl_ads$brand)
 
-library(dplyr)
 
 superbowl_ads <- superbowl_ads |>
 	mutate(across(
@@ -94,8 +97,53 @@ missing_text = "Missing"
 	modify_caption("**Funny Superbowl Ads Univariate Regression Fit**")
 
 #Figures
+#Forest Plot of Funny Superbowl Ads
+glm(funny ~ show_product_quickly + patriotic + celebrity + danger,
+		data = superbowl_ads, family = binomial()) |>
+	tbl_regression(
+		add_estimate_to_reference_rows = TRUE,
+		exponentiate = TRUE,
+		label = list(
+			show_product_quickly ~ "Did it show the product right away?",
+			patriotic ~ "Was it Patriotic",
+			celebrity ~ "Did it feature a celebrity? ",
+			danger ~ "Did it involve danger?"
+	)
+	) |>
+	plot() +
+	labs(title = "Forest Plot of Funny Superbowl Ads")
 
-hist(superbowl_ads$year)
 
+ggplot(data = {superbowl_ads},
+			 aes(x = {brand}, fill = funny)) +
+	geom_bar() + labs(title = "Frequency of Funny Superbowl Ads by Brand")
 
+ggplot(data = {superbowl_ads},
+			 aes(x = {brand}, fill = brand),) +
+	geom_bar() + labs(title = "Frequency of Brand Advertisers")
 
+ggplot(data = superbowl_ads,
+			 aes(x = brand,
+			 		fill = brand)) +
+	geom_bar() +
+	facet_grid(cols = vars(funny)) +
+	scale_fill_brewer(palette = "Spectral",
+										direction = -1) + theme_minimal() +
+	labs(title = "Brand Advertisers that have funny ads",
+			 y = NULL)
+
+# Ads with animals over the years
+ggplot(data = superbowl_ads, aes(x = year)) +
+	geom_bar() +
+	labs(x = "Year") +
+	facet_grid(rows = vars(animals),
+						 margins = TRUE,
+						 scales = "free_y") + labs(title = "Frequency of Superbowl ads from 2000 to 2020 that include animals")
+
+# Ads that involved celebrities over the years
+ggplot(data = superbowl_ads, aes(x = year)) +
+	geom_bar() +
+	labs(x = "Year") +
+	facet_wrap(vars(celebrity)) + labs(title = "Frequency of Superbowl ads from 2000 to 2020 that include celebrities")
+
+#Functions
