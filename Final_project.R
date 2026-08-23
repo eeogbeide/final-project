@@ -8,6 +8,7 @@ library(ggplot2)
 install.packages("tidycat")
 library(tidycat)
 
+###################
 #generate a summary of dataset
 summary(superbowl_ads)
 names(superbowl_ads)
@@ -21,9 +22,13 @@ count(superbowl_ads, brand, danger)
 #Create a table for count of ads that did not have Youtube URL
 table(is.na(superbowl_ads$youtube_url))
 tabyl(superbowl_ads$brand)
+########################
 
 
-superbowl_ads <- superbowl_ads |>
+install.packages("here")
+
+#Load data
+superbowl_ads <- read_csv(here::here("data", "superbowl-ads.csv")) |>
 	mutate(across(
 		c(funny, show_product_quickly, patriotic, celebrity, danger, animals,use_sex),
 		~ factor(., levels = c(FALSE, TRUE), labels = c("No", "Yes"))
@@ -39,12 +44,12 @@ tbl_summary(
 		patriotic, celebrity, danger, animals
 	),
 	label = list(
-		funny ~ "Was it trying to be funny?",
-		show_product_quickly ~ "Did it show the product right away?",
-		patriotic ~ "Was it Patriotic",
-		celebrity ~ "Did it feature a celebrity? ",
-		danger ~ "Did it involve danger?",
-		animals ~ "Did it include animals?"
+		funny ~ "Funny Ads",
+		show_product_quickly ~ "Ads showed the product right away",
+		patriotic ~ "Patriotic Ads",
+		celebrity ~ "Celebrity-featured Ads",
+		danger ~ "Ads involving danger",
+		animals ~ "Animals-featured Ads"
 	),
 	missing_text = "Missing"
 )|>
@@ -113,6 +118,21 @@ glm(funny ~ show_product_quickly + patriotic + celebrity + danger,
 	plot() +
 	labs(title = "Forest Plot of Funny Superbowl Ads")
 
+#Forest Plot of Superbowl Ads that used Sex
+glm(use_sex ~ show_product_quickly + funny + celebrity + danger,
+		data = superbowl_ads, family = binomial()) |>
+	tbl_regression(
+		add_estimate_to_reference_rows = TRUE,
+		exponentiate = TRUE,
+		label = list(
+			show_product_quickly ~ "Did it show the product right away?",
+			funny ~ "Was it funny?",
+			celebrity ~ "Did it feature a celebrity? ",
+			danger ~ "Did it involve danger?"
+		)
+	) |>
+	plot() +
+	labs(title = "Forest Plot of Superbowl Ads that used Sex")
 
 ggplot(data = {superbowl_ads},
 			 aes(x = {brand}, fill = funny)) +
@@ -147,30 +167,23 @@ ggplot(data = superbowl_ads, aes(x = year)) +
 	facet_wrap(vars(celebrity)) + labs(title = "Frequency of Superbowl ads from 2000 to 2020 that include celebrities")
 
 #Functions
-data = data
-show_product_quickly + funny + celebrity + danger,
 
-#Function to fit regression of Patriotic Superbowl Ads
+#Function to get the percent of each ad characteristic
 
+find_pct_value <- function(data, variable) {
+	counts <- count(data, {{ variable }})
+	total <- sum(counts$n)
+	pct_value <- mutate(counts, pct = n / total * 100)
+	return(pct_value)
+}
+
+find_pct_value(superbowl_ads, funny)
+
+#Function to find if there is an association between an ad being patriotic and
+#having another characteristic
 fit_patriotic <- function(data, predictors) {
-	glm(reformulate(predictors,response = "show_product_quickly","funny","celebrity","danger"),
-			data = data, family = binomial())
+	glm(reformulate(predictors, response = "patriotic"), data = data, family = binomial())
 }
 
-fit_patriotic(superbowl_ads, patriotic)
+coef(fit_patriotic(superbowl_ads,"use_sex"))
 
-fit_logistic <- function(data, outcome) {
-	glm({{outcome}} ~ show_product_quickly + funny + celebrity + danger,
-			data = data, family = binomial())
-}
-
-fit_logistic(superbowl_ads, patriotic)
-fit_logistic(superbowl_ads, danger)
-
-#Function to determine superbowl ads count by year
-count_by_year <- function(data, yr) {
-	data |>
-		filter(year == yr) |>
-		count()
-}
-count_by_year(superbowl_ads,2000)
