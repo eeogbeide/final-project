@@ -3,6 +3,7 @@ library(tidyverse)
 library(gtsummary)
 install.packages("janitor")
 library(janitor)
+library(broom)
 
 summary(superbowl_ads)
 names(superbowl_ads)
@@ -17,7 +18,16 @@ count(superbowl_ads, brand, danger)
 table(is.na(superbowl_ads$youtube_url))
 tabyl(superbowl_ads$brand)
 
-#Create a GTsummary of Superbowl Ads data
+library(dplyr)
+
+superbowl_ads <- superbowl_ads |>
+	mutate(across(
+		c(funny, show_product_quickly, patriotic, celebrity, danger, animals,use_sex),
+		~ factor(., levels = c(FALSE, TRUE), labels = c("No", "Yes"))
+	))
+
+
+#Create a GTsummary of Superbowl Ads data by Brands
 tbl_summary(
 	superbowl_ads,
 	by = brand,
@@ -38,7 +48,54 @@ tbl_summary(
 	# add a total column with the number of observations
 	add_overall(col_label = "**Total** N = {N}") |>
 	bold_labels() |>
-	modify_caption("**Brand characteristics**")
+	modify_caption("**Superbowl Ads Brand characteristics**")
 
-hist(data$variable)
+#Regression Fits based on Funny Ads outcome
+
+#Multivariable Regression based on Funny Superbowl Ads
+logistic_model <- glm(funny ~ show_product_quickly + patriotic + celebrity + danger,
+											data = superbowl_ads, family = binomial()
+)
+
+tbl_regression(
+	logistic_model,
+	exponentiate = TRUE,
+	label = list(
+		show_product_quickly ~ "Did it show the product right away?",
+		patriotic ~ "Was it Patriotic",
+		celebrity ~ "Did it feature a celebrity? ",
+		danger ~ "Did it involve danger?"
+	),
+	missing_text = "Missing"
+)|>
+	bold_labels() |>
+	modify_caption("**Funny Superbowl Ads Multivariable Regression Fit**")
+
+#Univariate Regression based on Funny Superbowl Ads
+tbl_uvregression(
+	superbowl_ads,
+	y = funny,
+	include = c(
+		funny, show_product_quickly,
+		patriotic, celebrity, danger
+	),
+	method = glm,
+	method.args = list(family = binomial()),
+	exponentiate = TRUE,
+	label = list(
+		show_product_quickly ~ "Did it show the product right away?",
+		patriotic ~ "Was it Patriotic",
+		celebrity ~ "Did it feature a celebrity? ",
+		danger ~ "Did it involve danger?"
+),
+missing_text = "Missing"
+)|>
+	bold_labels() |>
+	modify_caption("**Funny Superbowl Ads Univariate Regression Fit**")
+
+#Figures
+
+hist(superbowl_ads$year)
+
+
 
