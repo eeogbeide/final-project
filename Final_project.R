@@ -147,3 +147,30 @@ ggplot(data = superbowl_ads, aes(x = year)) +
 	facet_wrap(vars(celebrity)) + labs(title = "Frequency of Superbowl ads from 2000 to 2020 that include celebrities")
 
 #Functions
+data = data
+show_product_quickly + funny + celebrity + danger,
+
+#Function to fit regression of Patriotic Superbowl Ads
+
+fit_patriotic <- function(data, predictors) {
+	glm(reformulate(predictors,response = "show_product_quickly","funny","celebrity","danger"),
+			data = data, family = binomial())
+}
+
+fit_patriotic(superbowl_ads, patriotic)
+
+fit_logistic <- function(data, outcome) {
+	glm({{outcome}} ~ show_product_quickly + funny + celebrity + danger,
+			data = data, family = binomial())
+}
+
+fit_logistic(superbowl_ads, patriotic)
+fit_logistic(superbowl_ads, danger)
+
+#Function to determine superbowl ads count by year
+count_by_year <- function(data, yr) {
+	data |>
+		filter(year == yr) |>
+		count()
+}
+count_by_year(superbowl_ads,2000)
