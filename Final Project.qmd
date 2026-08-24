@@ -8,23 +8,68 @@ execute:
   echo: false
 ---
 
-## Quarto
+## Superbowl Ads
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
+This table is a summary of ads from the 10 brands that had the most advertisements in Super Bowls from 2000 to 2020, according to data from [superbowl-ads.com](https://www.superbowl-ads.com), with matching videos found on YouTube. FiveThirtyEight staffers then came up with seven defining characteristics of a Super Bowl ad, watched every video and evaluated each according to the taxonomy in the table below.
 ```{r}
-1 + 1
+#| message: false
+library(tidyverse)
+library(gtsummary)
+library(dplyr)
+#Load data
+superbowl_ads <- read_csv(here::here("data", "superbowl-ads.csv")) |>
+	mutate(across(
+		c(funny, show_product_quickly, patriotic, celebrity, danger, animals,use_sex),
+		~ factor(., levels = c(FALSE, TRUE), labels = c("No", "Yes"))
+	))
+
 ```
 
-You can add options to executable code like this
-
 ```{r}
-#| echo: false
-2 * 2
+#| label: tbl-brand
+#| tbl-cap: "Descriptive statistics characterizing 10 Brands' Superbowl Ads"
+
+#Create a GTsummary of Superbowl Ads data by Brands
+tbl_brand <- tbl_summary(
+	superbowl_ads,
+	by = brand,
+	include = c(
+		funny, show_product_quickly,
+		patriotic, celebrity, danger, animals
+	),
+	label = list(
+		funny ~ "Funny Ads",
+		show_product_quickly ~ "Ads showed the product right away",
+		patriotic ~ "Patriotic Ads",
+		celebrity ~ "Celebrity-featured Ads",
+		danger ~ "Ads involving danger",
+		animals ~ "Animals-featured Ads"
+	),
+	missing_text = "Missing"
+)|>
+add_overall(col_label = "**Total** N = {N}") |>
+	bold_labels()
+tbl_brand
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+```{r}
+logistic_model <- glm(funny ~ show_product_quickly + patriotic + celebrity + danger,
+											data = superbowl_ads, family = binomial()
+)
+
+tbl_regression(
+	logistic_model,
+	exponentiate = TRUE,
+	label = list(
+		show_product_quickly ~ "Did it show the product right away?",
+		patriotic ~ "Was it Patriotic",
+		celebrity ~ "Did it feature a celebrity? ",
+		danger ~ "Did it involve danger?"
+	),
+	missing_text = "Missing"
+)|>
+	bold_labels() |>
+	modify_caption("**Funny Superbowl Ads Multivariable Regression Fit**")
+
+```
+
