@@ -13,9 +13,13 @@ execute:
 This table is a summary of ads from the 10 brands that had the most advertisements in Super Bowls from 2000 to 2020, according to data from [superbowl-ads.com](https://www.superbowl-ads.com), with matching videos found on YouTube. FiveThirtyEight staffers then came up with seven defining characteristics of a Super Bowl ad, watched every video and evaluated each according to the taxonomy in the table below.
 ```{r}
 #| message: false
+library(dplyr)
 library(tidyverse)
 library(gtsummary)
-library(dplyr)
+library(janitor)
+library(broom)
+library(ggplot2)
+library(tidycat)
 #Load data
 superbowl_ads <- read_csv(here::here("data", "superbowl-ads.csv")) |>
 	mutate(across(
@@ -53,11 +57,30 @@ tbl_brand
 ```
 
 ```{r}
+inline_text(tbl_brand,variable = "patriotic",
+            column = "Budweiser")
+```
+In the sample above, `r inline_text(tbl_brand,variable = "patriotic",column = "Budweiser")` of Budweiser ads were patriotic.'
+
+```{r}
+funny_dori <- inline_text(tbl_brand, variable = funny, column = "Doritos")
+funny_cola <- inline_text(tbl_brand, variable = funny, column = "Coca-Cola")
+```
+
+Additionally, a greater proportion of Doritos ads (`r funny_dori`) than Coca-Cola (`r funny_cola`) ads were funny.
+
+
+```{r}
+#| label: tbl-regression
+#| tbl-cap: "Funny Superbowl Ads Multivariable Regression Fit"
+
+#Create a GTsummary of Superbowl Ads data by Brands
+
 logistic_model <- glm(funny ~ show_product_quickly + patriotic + celebrity + danger,
 											data = superbowl_ads, family = binomial()
 )
 
-tbl_regression(
+tbl_funnyreg <- tbl_regression(
 	logistic_model,
 	exponentiate = TRUE,
 	label = list(
@@ -68,8 +91,37 @@ tbl_regression(
 	),
 	missing_text = "Missing"
 )|>
-	bold_labels() |>
-	modify_caption("**Funny Superbowl Ads Multivariable Regression Fit**")
-
+	bold_labels()
+tbl_funnyreg
+tidy_fun = broom.helpers::tidy_parameters
 ```
+
+```{r}
+brand_figure<- ggplot(data = {superbowl_ads},
+			 aes(x = {brand}, fill = brand),) +
+	geom_bar() + labs(title = "Frequency of Ads by Brand Advertisers")
+brand_figure
+```
+
+
+```{r}
+#| label: tbl-topbrand
+#| tbl-cap: "Table of Top Brands"
+
+tbl_top_brands <- tbl_summary(
+	superbowl_ads,
+	by = year,
+	include = c(
+		brand,
+	),
+	label = list(
+		brand ~ "Brands"
+	),
+	missing_text = "Missing"
+)|>
+add_overall(col_label = "**Total** N = {N}") |>
+	bold_labels()
+tbl_top_brands
+```
+
 

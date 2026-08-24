@@ -8,23 +8,6 @@ library(ggplot2)
 install.packages("tidycat")
 library(tidycat)
 
-###################
-#generate a summary of dataset
-summary(superbowl_ads)
-names(superbowl_ads)
-str(superbowl_ads)
-colnames(superbowl_ads)
-table(superbowl_ads$brand,superbowl_ads$celebrity)
-sum(is.na(superbowl_ads))
-mean(superbowl_ads$animals)
-count(superbowl_ads, brand, danger)
-
-#Create a table for count of ads that did not have Youtube URL
-table(is.na(superbowl_ads$youtube_url))
-tabyl(superbowl_ads$brand)
-########################
-
-
 install.packages("here")
 
 #Load data
