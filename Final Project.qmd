@@ -60,7 +60,7 @@ tbl_brand
 inline_text(tbl_brand,variable = "patriotic",
             column = "Budweiser")
 ```
-In the sample above, `r inline_text(tbl_brand,variable = "patriotic",column = "Budweiser")` of Budweiser ads were patriotic.'
+In the sample above, `r inline_text(tbl_brand,variable = "patriotic",column = "Budweiser")` of Budweiser ads were patriotic.
 
 ```{r}
 funny_dori <- inline_text(tbl_brand, variable = funny, column = "Doritos")
@@ -71,7 +71,7 @@ Additionally, a greater proportion of Doritos ads (`r funny_dori`) than Coca-Col
 
 
 ```{r}
-#| label: tbl-regression
+#| label: tbl-funnyreg
 #| tbl-cap: "Funny Superbowl Ads Multivariable Regression Fit"
 
 #Create a GTsummary of Superbowl Ads data by Brands
@@ -95,14 +95,18 @@ tbl_funnyreg <- tbl_regression(
 tbl_funnyreg
 tidy_fun = broom.helpers::tidy_parameters
 ```
+As shown in @tbl-funnyreg, the odds of a funny superbowl ad involving danger is 4.23 times the odds of a funny superbowl ad not involving danger. 
 
 ```{r}
+#| label: fig-brand-freq
+#| fig-cap: "Frequency of Super Bowl Ads by Brand"
 brand_figure<- ggplot(data = {superbowl_ads},
 			 aes(x = {brand}, fill = brand),) +
 	geom_bar() + labs(title = "Frequency of Ads by Brand Advertisers")
 brand_figure
 ```
 
+As seen in @fig-brand-freq,  Bud Light had the greatest number of superbowl ads between 2000 and 2020.
 
 ```{r}
 #| label: tbl-topbrand
@@ -123,5 +127,7 @@ add_overall(col_label = "**Total** N = {N}") |>
 	bold_labels()
 tbl_top_brands
 ```
+
+
 
 
