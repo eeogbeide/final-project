@@ -11,6 +11,7 @@ execute:
 ## Superbowl Ads
 
 This table is a summary of ads from the 10 brands that had the most advertisements in Super Bowls from 2000 to 2020, according to data from [superbowl-ads.com](https://www.superbowl-ads.com), with matching videos found on YouTube. FiveThirtyEight staffers then came up with seven defining characteristics of a Super Bowl ad, watched every video and evaluated each according to the taxonomy in the table below.
+
 ```{r}
 #| message: false
 library(dplyr)
@@ -39,7 +40,7 @@ tbl_brand <- tbl_summary(
 	by = brand,
 	include = c(
 		funny, show_product_quickly,
-		patriotic, celebrity, danger, animals
+		patriotic, celebrity, danger, animals,use_sex
 	),
 	label = list(
 		funny ~ "Funny Ads",
@@ -47,7 +48,8 @@ tbl_brand <- tbl_summary(
 		patriotic ~ "Patriotic Ads",
 		celebrity ~ "Celebrity-featured Ads",
 		danger ~ "Ads involving danger",
-		animals ~ "Animals-featured Ads"
+		animals ~ "Animals-featured Ads",
+		use_sex~ "Ads that use sex appeal"
 	),
 	missing_text = "Missing"
 )|>
@@ -56,15 +58,20 @@ add_overall(col_label = "**Total** N = {N}") |>
 tbl_brand
 ```
 
-Add inline text such as a percent of a brand that is both animals and patriotic.!
+The percentage of Budweiser ads that were patriotic and included animals is `r round(mean(superbowl_ads$animals[superbowl_ads$brand == "Budweiser"] == "Yes" & superbowl_ads$patriotic[superbowl_ads$brand == "Budweiser"] == "Yes", na.rm = TRUE) * 100, 1)`%.
 
-The percentage of Budweiser ads that were both funny and patriotic is `r round(mean(superbowl_ads$brand == "Budweiser" & superbowl_ads$funny == "TRUE" & superbowl_ads$patriotic == "TRUE", na.rm = TRUE) * 100, 1)`.
+```{r}
+pct_dataset_by_brand <-round(mean(superbowl_ads$brand == "Hyundai" & superbowl_ads$funny == "Yes" & superbowl_ads$patriotic == "Yes", na.rm = TRUE) * 100, 1)
+```
+
+The percentage of Hyundai ads that were both funny and patriotic among all the Super Bowl ads is `r pct_dataset_by_brand`%.
 
 ```{r}
 inline_text(tbl_brand,variable = "patriotic",
             column = "Budweiser")
 ```
-In the sample above, `r inline_text(tbl_brand,variable = "patriotic",column = "Budweiser")` of Budweiser ads were patriotic.
+
+In @tbl-brand above, `r inline_text(tbl_brand,variable = "patriotic",column = "stat_5")` of E-Trade ads were patriotic.
 
 ```{r}
 funny_dori <- inline_text(tbl_brand, variable = funny, column = "Doritos")
@@ -73,6 +80,7 @@ funny_cola <- inline_text(tbl_brand, variable = funny, column = "Coca-Cola")
 
 Additionally, a greater proportion of Doritos ads (`r funny_dori`) than Coca-Cola (`r funny_cola`) ads were funny.
 
+*In @tbl-funnyreg, is a multivariable regression fit to determine if there is an association between funny Super Bowl ads and other characteristics, to examine and assess the relationship between Superbowl ads characteristics. The results are shown below.*
 
 ```{r}
 #| label: tbl-funnyreg
@@ -99,39 +107,44 @@ tbl_funnyreg <- tbl_regression(
 tbl_funnyreg
 tidy_fun = broom.helpers::tidy_parameters
 ```
-As shown in @tbl-funnyreg, the odds of a funny superbowl ad involving danger is 4.23 times the odds of a funny superbowl ad not involving danger. 
 
+As shown in @tbl-funnyreg, the odds of a funny superbowl ad involving danger is 4.23 times the odds of a funny superbowl ad not involving danger.
+
+*The figure below displays the frequency of ads by Brand Advertisers from 2000 to 2020.*
 ```{r}
 #| label: fig-brand-freq
 #| fig-cap: "Frequency of Super Bowl Ads by Brand"
 brand_figure<- ggplot(data = {superbowl_ads},
 			 aes(x = {brand}, fill = brand),) +
-	geom_bar() + labs(title = "Frequency of Ads by Brand Advertisers")
+	geom_bar() + labs(title = "Frequency of Ads by Brand Advertisers from 2000 to 2020")
 brand_figure
 ```
 
-As seen in @fig-brand-freq,  Bud Light had the greatest number of superbowl ads between 2000 and 2020.
+As seen in @fig-brand-freq, Bud Light had the greatest number of Super Bowl ads between 2000 and 2020.
+
 
 ```{r}
 #| label: tbl-topbrand
-#| tbl-cap: "Table of Top Brands"
+#| tbl-cap: "Ad characteristics by Brand, 2015"
 
-tbl_top_brands <- tbl_summary(
-	superbowl_ads,
-	by = year,
+tbl_top_brands <- superbowl_ads |> filter(year == 2015) |>
+	tbl_summary(
+	by = brand,
 	include = c(
-		brand,
+		funny, show_product_quickly,
+		patriotic, celebrity, danger, animals
 	),
 	label = list(
-		brand ~ "Brands"
+		funny ~ "Funny Ads",
+		show_product_quickly ~ "Ads showed the product right away",
+		patriotic ~ "Patriotic Ads",
+		celebrity ~ "Celebrity-featured Ads",
+		danger ~ "Ads involving danger",
+		animals ~ "Animals-featured Ads"
 	),
 	missing_text = "Missing"
-)|>
+)|> 
 add_overall(col_label = "**Total** N = {N}") |>
 	bold_labels()
 tbl_top_brands
 ```
-
-
-
-
