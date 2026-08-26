@@ -58,7 +58,7 @@ tbl_brand
 
 Add inline text such as a percent of a brand that is both animals and patriotic.!
 
-The percentage of Budweiser ads that were both funny and patriotic is `r round(mean(superbowl_ads$brand == "Budweiser" & superbowl_ads$funny == "TRUE" & superbowl_ads$patriotic == "TRUE", na.rm = TRUE) * 100, 1)`.
+The percentage of Budweiser ads that were both funny and patriotic is `r round(mean(df$brand == "Budweiser" & df$funny == "TRUE" & df$patriotic == "TRUE", na.rm = TRUE) * 100, 1)`%.
 
 ```{r}
 inline_text(tbl_brand,variable = "patriotic",
@@ -131,6 +131,7 @@ add_overall(col_label = "**Total** N = {N}") |>
 	bold_labels()
 tbl_top_brands
 ```
+
 
 
 

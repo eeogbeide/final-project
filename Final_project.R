@@ -9,6 +9,7 @@ install.packages("tidycat")
 library(tidycat)
 
 install.packages("here")
+setwd("~/Library/CloudStorage/OneDrive-Emory/EPI590R/final-project")
 
 #Load data
 superbowl_ads <- read_csv(here::here("data", "superbowl-ads.csv")) |>
@@ -36,7 +37,6 @@ tbl_summary(
 	),
 	missing_text = "Missing"
 )|>
-	# add a total column with the number of observations
 	add_overall(col_label = "**Total** N = {N}") |>
 	bold_labels() |>
 	modify_caption("**Superbowl Ads Brand characteristics**")
@@ -121,10 +121,15 @@ ggplot(data = {superbowl_ads},
 			 aes(x = {brand}, fill = funny)) +
 	geom_bar() + labs(title = "Frequency of Funny Superbowl Ads by Brand")
 
-ggplot(data = {superbowl_ads},
-			 aes(x = {brand}, fill = brand),) +
-	geom_bar() + labs(title = "Frequency of Brand Advertisers")
 
+#Bar graph of the Frequency of Brand Advertisers
+brand_gplot <-ggplot(data = {superbowl_ads},
+										 aes(x = {brand}, fill = brand),) +
+	geom_bar() + labs(title = "Frequency of Brand Advertisers")
+ggsave(plot =brand_gplot,
+			 filename =here::here("output","brand_gplot.pdf"))
+
+#Superbowl Brand Advertisers that had funny ads
 ggplot(data = superbowl_ads,
 			 aes(x = brand,
 			 		fill = brand)) +
@@ -143,18 +148,22 @@ ggplot(data = superbowl_ads, aes(x = year)) +
 						 margins = TRUE,
 						 scales = "free_y") + labs(title = "Frequency of Superbowl ads from 2000 to 2020 that include animals")
 
-# Ads that involved celebrities over the years
-ggplot(data = superbowl_ads, aes(x = year)) +
+
+#Superbowl ads from 2000 to 2020 that include celebrities
+celeb_gplot <- ggplot(data = superbowl_ads, aes(x = year)) +
 	geom_bar() +
 	labs(x = "Year") +
 	facet_wrap(vars(celebrity)) + labs(title = "Frequency of Superbowl ads from 2000 to 2020 that include celebrities")
+ggsave(plot =celeb_gplot,
+			 filename =here::here("output","celeb_gplot.pdf"))
+
 
 #Functions
 
 #Function to get the percent of each ad characteristic
 
 find_pct_value <- function(data, variable) {
-	counts <- count(data, {{ variable }})
+	counts <- count(data, {{variable }})
 	total <- sum(counts$n)
 	pct_value <- mutate(counts, pct = n / total * 100)
 	return(pct_value)
@@ -168,5 +177,6 @@ fit_patriotic <- function(data, predictors) {
 	glm(reformulate(predictors, response = "patriotic"), data = data, family = binomial())
 }
 
-coef(fit_patriotic(superbowl_ads,"use_sex"))
+coef(fit_patriotic(superbowl_ads,"animals"))
 
+#Save forrest plot and
