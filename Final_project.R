@@ -178,5 +178,3 @@ fit_patriotic <- function(data, predictors) {
 }
 
 coef(fit_patriotic(superbowl_ads,"animals"))
-
-#Save forrest plot and
