@@ -1,6 +1,17 @@
 # Super Bowl Ads 
+**Final Project**
+Author: Eghosa Ogbeide
 
-Note: I did not use AI.
+Hello and welcome to my  Final Project! I'm excited to share my final project with you all. I'm a big sports fanatic and in another life I would have done sports marketing analyses,
+so finding a dataset using America's favorite pasttime as its basis and the reason I enjoy watching the Super Bowl was kismet. In my final project I explore the 10 brands that had the most advertisements in Super Bowls from 2000 to 2020.
+I examine any possible associations between these characteristics generating regression fits(both multivariable and univariate), forrest plots and other figures to help understand if there 
+are associations between these characteristics. Overall, this project will not require you to do much other than run and render the codes and quarto files. Please feel free to choose different variables to explore the different
+characteristics or associations between these ads.
+
+Note: I did not use AI for this final project.
+
+Below is the official README that explains the dataset provided by the dataset's folder. Happy coding!: 
+
 This folder contains the data behind the story [According To Super Bowl Ads, Americans Love America, Animals And Sex](http://projects.fivethirtyeight.com/super-bowl-ads).
 
 `superbowl-ads.csv` contains a list of ads from the 10 brands that had the most advertisements in Super Bowls from 2000 to 2020, according to data from [superbowl-ads.com](https://superbowl-ads.com/), with matching videos found on [YouTube](https://youtube.com). FiveThirtyEight staffers then came up with seven defining characteristics of a Super Bowl ad, watched every video and evaluated each according to the taxonomy in the table below.
