@@ -8,7 +8,7 @@ I examine any possible associations between these characteristics generating reg
 are associations between these characteristics. Overall, this project will not require you to do much other than run and render the codes and quarto files. Please feel free to choose different variables to explore the different
 characteristics or associations between these ads.
 
-*Run script.R and then render document.qmd*
+*Run Final_project.R and then render FinalProject.qmd*
 
 Note: I did not use AI for this final project. I did extract libraries and used the references shared in 590R and in your ID 543 course. 
 
