@@ -123,6 +123,7 @@ brand_figure
 As seen in @fig-brand-freq, Bud Light had the greatest number of Super Bowl ads between 2000 and 2020.
 
 
+@tbl-topbrand provides Super Bowl ad characteristics by brand in 2015.
 ```{r}
 #| label: tbl-topbrand
 #| tbl-cap: "Ad characteristics by Brand, 2015"
